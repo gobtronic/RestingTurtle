@@ -1,0 +1,7 @@
+## Interface: 11100
+## Version: 1.0.0
+## Title: RestingTurtle
+## Notes: Get some info about your rested XP while resting under a tent
+## Author: gobtronic
+
+RestingTurtle.lua
