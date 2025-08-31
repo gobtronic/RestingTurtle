@@ -1,6 +1,9 @@
 local mainFrame = MainFrame
 
-local function setupFrame()
+local function setupMainFrame()
+    if mainFrame.title then
+        return
+    end
     mainFrame:ClearAllPoints()
     mainFrame:SetFrameStrata('LOW')
     mainFrame:SetWidth(100)
@@ -9,21 +12,28 @@ local function setupFrame()
 end
 
 local function setupTitle()
+    if mainFrame.title then
+        return
+    end
     mainFrame.title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     mainFrame.title:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 0, 0)
     mainFrame.title:SetText("RestingTurtle")
 end
 
 local function setupRestedInfo(topFrame)
+    if mainFrame.restedInfo then
+        return
+    end
     mainFrame.restedInfo = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     mainFrame.restedInfo:SetPoint("TOPLEFT", topFrame, "BOTTOMLEFT", 0, 0)
-    mainFrame.restedInfo:SetText("Rested info")
 end
 
 local function setupRestingTent(topFrame)
+    if mainFrame.restingTent then
+        return
+    end
     mainFrame.restingTent = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     mainFrame.restingTent:SetPoint("TOPLEFT", topFrame, "BOTTOMLEFT", 0, 0)
-    mainFrame.restingTent:SetText("You are under a tent!")
 end
 
 local function setupDrag() 
@@ -41,7 +51,7 @@ end
 mainFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
 mainFrame:SetScript('OnEvent', function ()
   if event == 'PLAYER_ENTERING_WORLD' then
-    setupFrame()
+    setupMainFrame()
     setupTitle()
     setupRestedInfo(mainFrame.title)
     setupRestingTent(mainFrame.restedInfo)

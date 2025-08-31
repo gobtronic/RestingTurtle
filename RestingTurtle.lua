@@ -1,24 +1,8 @@
 MainFrame = CreateFrame("FRAME", "RTFrame", UIParent)
 
-local tentPercentage = 0.002
 local lastXPExhaustion = GetXPExhaustion()
 local lastUpdate = GetTime()
 local tentRestingStartTime = nil
-
-local function registerEvents(frame)
-    MainFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
-    MainFrame:RegisterEvent("UPDATE_EXHAUSTION")
-    MainFrame:SetScript('OnEvent', function()
-        this[event]()
-    end)
-    MainFrame:SetScript('OnUpdate', onUpdate)
-end
-
-local function getRestedXPPercentage()
-	local XPMax = UnitXPMax("player")
-    local XPExhaustion = GetXPExhaustion()
-    return XPExhaustion / XPMax * 100
-end
 
 function updateRestedXP(label) 
     local roundedRestedXP = string.format("%.0f", getRestedXPPercentage())
@@ -36,8 +20,7 @@ function updateRestingTent(label, isUnderATent)
     if (remainingPercentage == 0.0) then
         label:Hide()
     end
-    local tentPercentage = tentPercentage * 100
-    local remainingSecondsTotal = remainingPercentage / tentPercentage
+    local remainingSecondsTotal = remainingPercentage / (TENT_PERCENTAGE_PSECOND * 100)
     local remainingMinutes = math.floor(remainingSecondsTotal / 60)
     local remainingSeconds = math.mod(remainingSecondsTotal, 60.0)
     label:SetText(string.format("%02d:%02d", remainingMinutes, remainingSeconds) .. " until max rested XP")
@@ -50,11 +33,16 @@ function MainFrame:PLAYER_UPDATE_RESTING()
 end
 
 function MainFrame:UPDATE_EXHAUSTION()
+    if not lastXPExhaustion then
+        lastXPExhaustion = GetXPExhaustion()
+        if not lastXPExhaustion then lastXPExhaustion = 0.0 end
+    end
     lastUpdate = GetTime()
     updateRestedXP(MainFrame.restedInfo)
 	local XPMax = UnitXPMax("player")
     local XPExhaustion = GetXPExhaustion()
-    local expectedTentGain = math.floor(XPMax * tentPercentage)
+    if (not XPExhaustion) then XPExhaustion = 0.0 end
+    local expectedTentGain = math.floor(XPMax * TENT_PERCENTAGE_PSECOND)
     local XPExhaustionGain = XPExhaustion - lastXPExhaustion
     lastXPExhaustion = XPExhaustion
     local XPExhaustionPercentage = XPExhaustion / XPMax * 100
@@ -73,4 +61,9 @@ function onUpdate()
     MainFrame:UPDATE_EXHAUSTION()
 end
 
-registerEvents()
+MainFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
+MainFrame:RegisterEvent("UPDATE_EXHAUSTION")
+MainFrame:SetScript('OnEvent', function()
+    this[event]()
+end)
+MainFrame:SetScript('OnUpdate', onUpdate)

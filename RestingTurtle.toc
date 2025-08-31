@@ -6,4 +6,6 @@
 
 RestingTurtle.lua
 
+src\const.lua
+src\xp.lua
 src\frame.lua
